@@ -11,7 +11,6 @@ https://www.handsontec.com/dataspecs/module/BTS7960%20Motor%20Driver.pdf
 
 #include "RPi_Pico_TimerInterrupt.h"
 
-// Pin D0-D1 used by USB
 const uint8_t signalPinHigh = 2;  // voir Â§10 de http://gelit.ch/Train/DirectMM2.pdf
 const uint8_t signalPinLow = 3;
 const uint8_t powerPin = 8;   // pin 1 L293 (enable H-Bridge)
