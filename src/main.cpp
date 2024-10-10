@@ -17,13 +17,6 @@ const uint8_t signalPinLow = 3;
 const uint8_t powerPin = 8;   // pin 1 L293 (enable H-Bridge)
 const uint8_t redLedPin = 9;  // Power Status
 
-// s88
-// const int clockPin = 10;  // S88  voir Â§5.3 de http://gelit.ch/Train/Raildue_F.pdf
-// const int dataPin = 11;
-// const int resetPin = 12;
-// const int loadPin = 13;
-
-//const int s88_Nb = 16;         // 1 module Littfinski RM-88-N-Opto
 const uint8_t maxLocomotives = 2;  // Taille du tableau des locomotives
 const uint8_t Rob = 1;             // Robel 39548
 const uint8_t BLS = 2;             // BLS 29486
@@ -41,8 +34,6 @@ volatile byte activeLocomotive;      // only 1 Loc is active for Speed & Directi
 volatile byte locomotiveRefresh;     // Refresh
 volatile byte timerCounter;      // MFX Interrupt
 volatile byte syncCount;             // 3 caract de synchro MFX au min
-//volatile bool physicalRegister[s88_Nb + 10]; // S88 Physical Register
-//volatile byte mm2Packet[18 + 4];  // MM2 Packet for Turn
 volatile bool isPowerOn;
 volatile byte systemState;      // State in loop
 volatile int stateMachineStep;  // MFX State Machine
@@ -73,8 +64,6 @@ void periodic(byte);
 void adr0();
 void centrale();
 void calculateCRC();
-//void s88();
-//void Turn(int dev, bool val);
 void bCRC(bool b);
 void tri(int v, int b);
 void getSID(byte);
@@ -219,11 +208,6 @@ void loop() {
       systemState = 5;
       break;
     case 5:
-      // if (millis() > T_S88)
-      // {
-      //   T_S88 = millis() + 1000;
-      // s88();
-      // }
       if (millis() > tempoCentrale) {
         tempoCentrale = millis() + 500;
         centrale();
@@ -277,13 +261,6 @@ void loop() {
             throttle(activeLocomotive, 0);
             Serial.println("Toggle Direction");
             break;
-          // case 't':
-          //   turnVal = !turnVal;
-          //   Turn(turnAdr, turnVal);
-          //   delay(250);
-          //   Serial.print("turnVal=");
-          //   Serial.println(turnVal);
-          //   break;
           case 's':
             Serial.printf("Power = %s \nSystemState = %d \nMachine steep = %d\n", isPowerOn ? "true" : "false", systemState, stateMachineStep);
             Serial.printf("Length = %d\n", signalBuffer[0]);
@@ -353,8 +330,6 @@ void throttle(byte loc, byte value) {  // Â§3.1.2 Fahren mit 8 steps
     Serial.print("-");
     Serial.println(value);
   }
-  // do {
-  // } 
   while (isBusy){};
   isBusy = true;
   frameLength = 0;
@@ -369,11 +344,7 @@ void throttle(byte loc, byte value) {  // Â§3.1.2 Fahren mit 8 steps
     signalBuffer[13] = 0;
   }
   frameLength = frameLength + 1;  // Direction
-  // byte b = 2;
-  // for (byte i = 0; i < 3; i++) {
-  //   signalBuffer[i + 14] = bitRead(value, b);
-  //   b--;
-  // }
+
   for (byte i = 0, b = 2; i < 3; i++, b--)
     signalBuffer[i + 14] = value & (1 << b);
 
@@ -392,8 +363,6 @@ void func(byte loc, byte func, bool value) {  // Â§3.1.6 Einzel Funktion
     Serial.print("-");
     Serial.println(value);
   }
-  // do {
-  // } 
   while (isBusy){};
   isBusy = true;
   frameLength = 0;
@@ -421,8 +390,6 @@ void periodic(byte loc) {  // like MS2
     Serial.print("periodic-");
     Serial.println(loc);
   }
-  // do {
-  // } 
   while (isBusy){};
   isBusy = true;
   frameLength = 0;
@@ -477,8 +444,6 @@ void getSID(byte loc) {  // fixed SID from UID
     Serial.print("getSID-");
     Serial.println(loc);
   }
-  // do {
-  // } 
   while (isBusy){};
   isBusy = true;
   frameLength = 0;
@@ -520,8 +485,6 @@ void centrale() {  // p23
   if (trace) {
     Serial.println("Centrale");
   }
-  // do {
-  // } 
   while (isBusy){};
   isBusy = true;
   frameLength = 0;
